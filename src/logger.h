@@ -1,5 +1,8 @@
+#ifndef Logger_h
+#define Logger_h
 #include <Arduino.h>
 
+/* class to log to serial/screen/whatever...*/
 class Logger {
     private:
     public:
@@ -18,3 +21,5 @@ class Logger {
             Serial.println(message);
         }
 };
+
+#endif

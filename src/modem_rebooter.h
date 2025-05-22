@@ -1,26 +1,25 @@
 #include <RCSwitch.h>
-#include "logger.cpp"
+#include "logger.h"
 
 #define TXD2 32
 #define PULSE_LENGTH 414
 #define PROTOCOL_NUMBER 1
 
 /* Class to reboot a modem/router */
-class ModemRebooter
+class ModemRebooter : Logger
 {
     private:
-        Logger logger = Logger();
         RCSwitch mySwitch = RCSwitch();
         /* power on the modem/router*/
         void powerOn()
         {
-            logger.logLine("Sending On...");
+            logLine("Sending On...");
             mySwitch.send("010101110111010011111001");
         }
         /* power off the modem/router*/
         void powerOff()
         {
-            logger.logLine("Sending Off...");
+            logLine("Sending Off...");
             mySwitch.send("010101110111010011110001");
         }
     public:
