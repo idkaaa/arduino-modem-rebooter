@@ -10,8 +10,8 @@ class ConnectivityChecker : public Logger
         IPAddress ip1;// = ip1.fromString("4.2.2.1"); // The first remote ip to ping
         IPAddress ip2;// = ip2.fromString("8.8.8.8"); // The second remote ip to ping
         IPAddress ipGateway;// = ipGateway.fromString(GATEWAY_IP); // Gateway device IP to ping
-        const char *ssid; // = WIFI_SSID;                           // WiFi SSID
-        const char *password; // = WIFI_PASSWORD;                   // WiFi Password
+        String ssid; // = WIFI_SSID;                           // WiFi SSID
+        String password; // = WIFI_PASSWORD;                   // WiFi Password
     public:
         /// @brief Constructor for the ConnectivityChecker class.
         /// @param ip1 The first remote IP to ping.
@@ -19,7 +19,7 @@ class ConnectivityChecker : public Logger
         /// @param ipGateway the gateway device IP to ping.
         /// @param ssid the WiFi SSID.
         /// @param password the WiFi password.
-        ConnectivityChecker(IPAddress ip1, IPAddress ip2, IPAddress ipGateway, const char *ssid, const char *password)
+        ConnectivityChecker(IPAddress ip1, IPAddress ip2, IPAddress ipGateway, String ssid, String password)
         {
             this->ip1 = ip1;
             this->ip2 = ip2;
@@ -44,7 +44,7 @@ class ConnectivityChecker : public Logger
             }
             logLine("\nConnected to the WiFi network");
             log("Local ESP32 IP: ");
-            logLine(WiFi.localIP().toString().c_str());
+            logLine(WiFi.localIP().toString());
         }
 
         /// @brief Check if the wifi connection is still active.
@@ -65,8 +65,7 @@ class ConnectivityChecker : public Logger
         /* Check if the gateway device can be reached.*/
         bool isGatewayUp()
         {
-            log("\nPinging gateway IP: ");
-            logLine(ipGateway.toString().c_str());
+            logLine("Pinging gateway IP: " + ipGateway.toString() + " ...");
             if (Ping.ping(ipGateway, 1))
             {
                 logLine("Gateway is up.");
@@ -79,7 +78,7 @@ class ConnectivityChecker : public Logger
         /* Check if the internet can be reached */
         bool isInternetConnected()
         {
-            logLine("Pinging internet IPs...");
+            logLine("Pinging IP1: " + ip1.toString() + " and IP2: " + ip2.toString() + " ...");
             bool success = Ping.ping(ip1, 1) || Ping.ping(ip2, 1);
             if (success)
             {

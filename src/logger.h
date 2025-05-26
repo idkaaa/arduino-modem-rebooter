@@ -12,12 +12,12 @@ class Logger {
         }
 
         /* log on the same line of output */
-        void log(const char* message) {
+        void log(String message) {
             Serial.print(message);
         }
 
         /* log on a new line of output */
-        void logLine(const char* message) {
+        void logLine(String message) {
             Serial.println(message);
         }
 };

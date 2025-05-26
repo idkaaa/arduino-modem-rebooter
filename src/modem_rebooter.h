@@ -1,7 +1,6 @@
 #include <RCSwitch.h>
 #include "logger.h"
 
-#define TXD2 32
 #define PULSE_LENGTH 414
 #define PROTOCOL_NUMBER 1
 
@@ -13,20 +12,22 @@ class ModemRebooter : Logger
         /* power on the modem/router*/
         void powerOn()
         {
-            logLine("Sending On...");
+            logLine("Powering modem on...");
             mySwitch.send("010101110111010011111001");
         }
         /* power off the modem/router*/
         void powerOff()
         {
-            logLine("Sending Off...");
+            logLine("Powering modem off...");
             mySwitch.send("010101110111010011110001");
         }
     public:
-        ModemRebooter()
+        /// @brief Constructor for the ModemRebooter class.
+        /// @param txPin remote control pin to use.
+        ModemRebooter(int txPin)
         {
-            pinMode(TXD2, OUTPUT);
-            mySwitch.enableTransmit(TXD2);
+            pinMode(txPin, OUTPUT);
+            mySwitch.enableTransmit(txPin);
             mySwitch.setProtocol(PROTOCOL_NUMBER);
             mySwitch.setPulseLength(PULSE_LENGTH);
             //mySwitch.setRepeatTransmit(10);
@@ -36,7 +37,7 @@ class ModemRebooter : Logger
         void reboot()
         {
             powerOff();
-            delay(3000);
+            delay(2000);
             powerOn();
         }
         
