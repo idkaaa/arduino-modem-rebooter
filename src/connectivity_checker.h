@@ -52,7 +52,7 @@ class ConnectivityChecker : public Logger
         /// @return bool - true if the connection is active, false if it is not.
         bool tryReconnectWiFi()
         {
-            logLine("\nChecking wifi connection.");
+            logLine("Checking wifi connection.");
             if (WiFi.status() != WL_CONNECTED)
             {
                 logLine("Reconnecting to WiFi...");
