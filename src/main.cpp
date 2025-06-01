@@ -17,7 +17,8 @@ User defined variables/constants
 */
 #define MODEM_REBOOT_PIN 23
 #define BUTTON_PIN 5
-#define LED_CONNECTED_PIN 33
+#define LED_ONLINE_PIN 27
+#define LED_OFFLINE_PIN 26
 #define BUZZER_PIN 17
 // cooldown to wait before checking if the modem is back up after rebooting
 unsigned long delayAfterModemReboot = 80000; 
@@ -49,10 +50,12 @@ unsigned long rebootCount = 0; //how many times the modem has been rebooted
 bool shouldEnableModemRebooting = true; //should any checking be done?
 unsigned long nextRebootAt = 0;
 bool isModemRebooting = false;
+bool isOnline = false; //is the internet connection online?
 
 void OnInternetCheckFail()
 {
     logger.logLine("Internet is NOT connected.");
+    isOnline = false;
     if (!shouldEnableModemRebooting)
     {
         logger.logLine("Modem rebooting is disabled, not rebooting modem.");
@@ -74,6 +77,7 @@ void OnInternetCheckFail()
 void OnInternetCheckSuccess()
 {
     logger.logLine("Internet is connected.");
+    isOnline = true;
     if (isModemRebooting)
     {
         logger.logLine("Modem rebooting completed, back online.");
@@ -103,23 +107,39 @@ bool CheckInternet(void *)
     return true;
 }
 
+/// @brief Switch led on or off based on the desired state.
+/// @param ledPin 
+/// @param desiredState 
+void ToggleLed(int ledPin, int desiredState)
+{
+    int state = digitalRead(ledPin);
+    if (state == desiredState)
+    {
+        return; // no change needed
+    }
+    digitalWrite(ledPin, desiredState);
+}
+
 void UpdateDisplay()
 {
-    if (shouldEnableModemRebooting)
+    if (!shouldEnableModemRebooting)
     {
-        if (digitalRead(LED_CONNECTED_PIN) == LOW)
-        {
-            logger.logLine("Turning on LED.");
-            digitalWrite(LED_CONNECTED_PIN, HIGH);
-        }
+        //disable green/red leds
+        ToggleLed(LED_ONLINE_PIN, LOW);
+        ToggleLed(LED_OFFLINE_PIN, LOW);
+        return;
+    }
+    
+    if (isOnline)
+    {
+        ToggleLed(LED_ONLINE_PIN, HIGH);
+    
+        ToggleLed(LED_OFFLINE_PIN, LOW);
     }
     else
     {
-        if (digitalRead(LED_CONNECTED_PIN) == HIGH)
-        {
-            logger.logLine("Turning off LED.");
-            digitalWrite(LED_CONNECTED_PIN, LOW);
-        }
+        ToggleLed(LED_ONLINE_PIN, LOW);
+        ToggleLed(LED_OFFLINE_PIN, HIGH);
     }
 }
 
@@ -143,7 +163,8 @@ void setup()
     connectivityChecker.initWiFi();
     pinMode(BUTTON_PIN, INPUT_PULLUP);
     button.setDebounceTime(100);
-    pinMode(LED_CONNECTED_PIN, OUTPUT);
+    pinMode(LED_ONLINE_PIN, OUTPUT);
+    pinMode(LED_OFFLINE_PIN, OUTPUT);
     internetCheckTask = timer.every(intervalInternetCheck, CheckInternet);
 }
 
